@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class CheckCongratulation extends Command
 {
@@ -11,7 +13,7 @@ class CheckCongratulation extends Command
      *
      * @var string
      */
-    protected $signature = 'check:coom';
+    protected $signature = 'check:com';
 
     /**
      * The console command description.
@@ -37,6 +39,31 @@ class CheckCongratulation extends Command
      */
     public function handle()
     {
-        echo 888;
+        date_default_timezone_set('Europe/Kiev');
+        $format='Happy Birthday Dear - %s';
+        $rows = App::make('get_sheet_data');
+        if(!$rows->count())
+        {
+            Log::channel('bot')->info('sheet without rows');
+            return;
+        };
+        $send_data=$rows->map(function($item,$key){
+            $dm='none';
+            if(preg_match("/([\d]+)-([\d]+)-([\d]+)/",$item[1],$mutch))
+            {
+                $dm=$mutch[1].'-'.$mutch[2];
+            }
+            return ['name'=>$item[0],'date'=>$dm];
+        })->where('date',date('d-m',time()));
+        if(!$send_data->count())
+        {
+            Log::channel('bot')->info('not one birthday');
+            return;
+        }
+        $send_data->each(function($item,$key) use($format) {
+            $message=sprintf($format,$item['name']);
+            Log::channel('slack')->info($message);
+            Log::channel('bot')->info($message);
+        });
     }
 }
