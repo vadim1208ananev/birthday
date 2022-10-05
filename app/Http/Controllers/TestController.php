@@ -35,8 +35,8 @@ class TestController extends Controller
               $message=sprintf($format,$item['name']);
               print_r($message);
         });
-
-        print_r(date('d-m-Y h:i:s',time()));
+        date_default_timezone_set('Europe/Kiev');
+        print_r(date('d-m-Y H:i:s',time()));
     }
 
     //
