@@ -33,8 +33,10 @@ class TestController extends Controller
         $send_data->each(function($item,$key) use($format) {
 
               $message=sprintf($format,$item['name']);
-
+              print_r($message);
         });
+        date_default_timezone_set('UTC');
+        print_r(date('d-m-Y h:i:s',time()));
     }
 
     //
