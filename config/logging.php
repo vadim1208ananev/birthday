@@ -53,6 +53,11 @@ return [
             'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
+        'bot' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/bot_log.log'),
+
+        ],
 
         'single' => [
             'driver' => 'single',

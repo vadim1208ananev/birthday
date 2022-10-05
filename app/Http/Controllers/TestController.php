@@ -3,43 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;  //
 
 class TestController extends Controller
 {
     public function index(){
-        $insert_scope='https://www.googleapis.com/auth/spreadsheets';
-       $read_scope=\Google_Service_Sheets::SPREADSHEETS;
 
-        $google_creds=storage_path('credentials.json');
-        putenv( 'GOOGLE_APPLICATION_CREDENTIALS=' . $google_creds);
-        $client = new \Google_Client();
-        $client->useApplicationDefaultCredentials();
+        $format='Happy Birthday %s';
+         $rows = App::make('get_sheet_data');
+        if(!$rows->count())
+        {
+            Log::channel('bot')->info('sheet without rows');
+            return;
+        };
+        $send_data=$rows->map(function($item,$key){
+            $dm='none';
+            if(preg_match("/([\d]+)-([\d]+)-([\d]+)/",$item[1],$mutch))
+            {
+                $dm=$mutch[1].'-'.$mutch[2];
+            }
+            return ['name'=>$item[0],'date'=>$dm];
+        })->where('date',date('d-m',time()));
+        if(!$send_data->count())
+        {
+            Log::channel('bot')->info('not one birthday');
+            return;
+        }
+        $send_data->each(function($item,$key) use($format) {
 
-        $client->addScope( $read_scope );
+              $message=sprintf($format,$item['name']);
 
-        $service = new \Google_Service_Sheets($client);
-        $spreadsheetId = '1IDBAp_r1cNbiCiK0WohkX2sczTHPFkHz4KjTj0Yu_Yc';
-        $sheetName = 'Sheet11';
-        $range = $sheetName;
-        $doc=$service->spreadsheets_values->get($spreadsheetId, $range);
-        return response()->json($doc);
-       // print_r($doc);
-
-        //clear all data
-     /*   $range = $sheetName;  // TODO: Update placeholder value.
-        $requestBody = new \Google_Service_Sheets_ClearValuesRequest();
-        $service->spreadsheets_values->clear($spreadsheetId, $range, $requestBody);
-
-        // insert data
-        $valueRange = new \Google_Service_Sheets_ValueRange();
-   $values=[[4,8,5]];
-        $body = new \Google_Service_Sheets_ValueRange( [ 'values' => $values] );
-
-        // valueInputOption - определяет способ интерпретации входных данных
-        // https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption
-        // RAW | USER_ENTERED
-        $options = array( 'valueInputOption' => 'RAW' );
-       $service->spreadsheets_values->update( $spreadsheetId, $sheetName . '!A1', $body, $options );*/
+        });
     }
+
     //
 }
