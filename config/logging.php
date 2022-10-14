@@ -74,7 +74,7 @@ return [
 
         'slack' => [
             'driver' => 'slack',
-            'url' => 'https://hooks.slack.com/services/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',
+            'url' => 'https://hooks.slack.com/services/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',
             'username' => 'Laravel Birthday Bot',
             'emoji' => ':boom:',
             'level' => env('LOG_LEVEL', 'critical'),

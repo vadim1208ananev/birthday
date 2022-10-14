@@ -40,7 +40,7 @@ class CheckCongratulation extends Command
     public function handle()
     {
         date_default_timezone_set('Europe/Kiev');
-        $format='Happy Birthday Dear - %s';
+        $format='Happy B-day! :flag-ua::tada::cake: - %s'; 
         $rows = App::make('get_sheet_data');
         if(!$rows->count())
         {
@@ -51,7 +51,9 @@ class CheckCongratulation extends Command
             $dm='none';
             if(preg_match("/([\d]+)-([\d]+)-([\d]+)/",$item[1],$mutch))
             {
-                $dm=$mutch[1].'-'.$mutch[2];
+				$day=(strlen($mutch[1])==1)?'0'.$mutch[1]:$mutch[1];
+				$month=(strlen($mutch[2])==1)?'0'.$mutch[2]:$mutch[2];
+                $dm=$day.'-'.$month;
             }
             return ['name'=>$item[0],'date'=>$dm];
         })->where('date',date('d-m',time()));

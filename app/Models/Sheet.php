@@ -20,7 +20,9 @@ class Sheet extends Model
        $doc=$service->spreadsheets_values->get(config('bot.spreadsheetId'), config('bot.range'));
        if(isset($doc->values))
        {
-           $return_data=$doc->values;
+	           $return_data=array_filter($doc->values,function($item){
+			   return (count($item)==2);
+		   });
        }
        return $return_data;
    }
