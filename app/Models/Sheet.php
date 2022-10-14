@@ -17,7 +17,7 @@ class Sheet extends Model
        $client->useApplicationDefaultCredentials();
        $client->addScope( $read_scope );
        $service = new \Google_Service_Sheets($client);
-       $doc=$service->spreadsheets_values->get(config('bot.spreadsheetId'), config('bot.range'));
+       $doc=$service->spreadsheets_values->get(env('SPREADSHEETID'), config('bot.range'));
        if(isset($doc->values))
        {
 	           $return_data=array_filter($doc->values,function($item){
